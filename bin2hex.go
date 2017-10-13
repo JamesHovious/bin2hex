@@ -29,8 +29,8 @@ func insertNth(s string, n int) string {
 }
 
 func parseArgs() {
-	inFilePtr = flag.String("InFile", "", " Where is the input file.")
-	outFilePtr = flag.String("Outfile", "", " Where do you want to save the file.")
+	inFilePtr = flag.String("InFile", "", " Path to the input file.")
+	outFilePtr = flag.String("Outfile", "", " Path to the output file.")
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "\r\n"+
