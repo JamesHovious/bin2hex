@@ -3,10 +3,14 @@ package main
 import (
 	"bytes"
 	"encoding/hex"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
 )
+
+var inFilePtr, outFilePtr *string
+var hexBytes []byte
 
 func insertNth(s string, n int) string {
 	var buffer bytes.Buffer
@@ -24,23 +28,46 @@ func insertNth(s string, n int) string {
 	return buffer.String()
 }
 
-func main() {
-	argsWithoutProg := os.Args[1:]
-	if len(argsWithoutProg) != 2 {
-		fmt.Println("[!] Should only have two arguments!")
+func parseArgs() {
+	inFilePtr = flag.String("InFile", "", " Where is the input file.")
+	outFilePtr = flag.String("Outfile", "", " Where do you want to save the file.")
+
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "\r\n"+
+			"Bin2Hex is a command line tool that will parse a binary file and write out a a hex file in an escaped format (e.g. \"\\x90\\41\").\r\n\r\n"+
+			"For example .\\Bin2Hex.exe --InFile MyBytes.bin --OutFile MyHex.hex\r\n\r\n"+
+			"Usage: \r\n")
+		flag.PrintDefaults()
 		os.Exit(0)
 	}
-	bytes, err := ioutil.ReadFile(argsWithoutProg[0])
+
+	flag.Parse()
+}
+
+func readInputfile() {
+	// Get the args and work with them.
+	bytes, err := ioutil.ReadFile(*inFilePtr)
 	if err != nil {
 		fmt.Println("[!] Error reading file")
+		fmt.Println(err)
 		os.Exit(0)
 	}
 	binStr := hex.EncodeToString(bytes)
-	hexBytes := []byte(insertNth(binStr, 2))
+	hexBytes = []byte(insertNth(binStr, 2))
+}
 
-	err = ioutil.WriteFile(argsWithoutProg[1], hexBytes, 0644)
+func writeOutputFile() {
+	err := ioutil.WriteFile(*outFilePtr, hexBytes, 0644)
 	if err != nil {
-		fmt.Println("[+] Successfully wrote out file")
+		fmt.Println("[!] Error writing file")
+		fmt.Println(err)
+		os.Exit(0)
 	}
+	fmt.Println("[+] Successfully wrote out file")
+}
 
+func main() {
+	parseArgs()
+	readInputfile()
+	writeOutputFile()
 }
