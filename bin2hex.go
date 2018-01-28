@@ -3,10 +3,11 @@ package main
 import (
 	"bytes"
 	"encoding/hex"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	flag "github.com/spf13/pflag"
 )
 
 var inFilePtr, outFilePtr *string
@@ -29,13 +30,13 @@ func insertNth(s string, n int) string {
 }
 
 func parseArgs() {
-	inFilePtr = flag.String("InFile", "", " Path to the input file.")
-	outFilePtr = flag.String("Outfile", "", " Path to the output file.")
+	inFilePtr = flag.StringP("InFile", "i", "", " Path to the input file.")
+	outFilePtr = flag.StringP("OutFile", "o", "", " Path to the output file.")
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "\r\n"+
 			"Bin2Hex is a command line tool that will parse a binary file and write out a a hex file in an escaped format (e.g. \"\\x90\\41\").\r\n\r\n"+
-			"For example .\\Bin2Hex.exe --InFile MyBytes.bin --OutFile MyHex.hex\r\n\r\n"+
+			"For example .\\Bin2Hex.exe -i MyBytes.bin -o MyHex.hex\r\n\r\n"+
 			"Usage: \r\n")
 		flag.PrintDefaults()
 		os.Exit(0)
